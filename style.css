@@ -5,7 +5,12 @@
 }
 
 .chart-wrapper {
+    display: block;
     width: 500px;
     height: 600px;
     margin: auto;
+}
+
+hr {
+    margin: 60px;
 }

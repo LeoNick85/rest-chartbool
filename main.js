@@ -58,6 +58,69 @@ $(document).ready(function() {
                     }
                 }
             });
+
+            var totalSalesByEmployee = {};
+            var tot_amount = 0;
+
+            //Tramite ciclo for costruisco un oggetto con le vendite totali divise per venditore e il totale del fatturato
+            for (var i = 0; i < array_vendite.length; i++) {
+                //verifico se il venditore è già nella lista e aggiorno l'oggetto vendite per impiegato di conseguenza
+                if (totalSalesByEmployee.hasOwnProperty(array_vendite[i].salesman)) {
+                    totalSalesByEmployee[array_vendite[i].salesman] += array_vendite[i].amount;
+                } else {
+                    totalSalesByEmployee[array_vendite[i].salesman] = array_vendite[i].amount;
+                }
+                //Aggiorno il conteggio del totale
+                tot_amount += array_vendite[i].amount;
+            }
+
+            //Creo un oggetto con le percentuali di vendita (vendita dell'impiegato/totale vendite)
+            var relativeSalesByEmployee = {};
+
+            for (x in totalSalesByEmployee) {
+                var name = x;
+                var personal_sales = totalSalesByEmployee[x];
+                relativeSalesByEmployee[name] = (personal_sales / tot_amount);
+            }
+
+            //Genero il secondo grafico, a torta con la divisione percentuale delle vendite dei singoli impiegati
+            var ctx2 = document.getElementById('chart-two').getContext('2d');
+            var myChart = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(relativeSalesByEmployee),
+                    datasets: [{
+                        label: '# of Sales',
+                        data: Object.values(relativeSalesByEmployee),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
             },
         error : function() {
             alert("Non funziona ajax");
