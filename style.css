@@ -1,0 +1,11 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+.chart-wrapper {
+    width: 500px;
+    height: 600px;
+    margin: auto;
+}
