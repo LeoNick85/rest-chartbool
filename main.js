@@ -63,8 +63,50 @@ function printCharts() {
                 data: {
                     labels: Object.keys(relativeSalesByEmployee),
                     datasets: [{
-                        label: '# of Sales',
+                        label: '% of Sales',
                         data: Object.values(relativeSalesByEmployee),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+
+            //Calcolo il numero di vendite divise per quadrimestre
+            var salesByQ = numberSalesQ(array_vendite);
+
+            //Genero il terzo grafico con la divisione numero contratti per quadrimestre
+            var ctx3 = document.getElementById('chart-three').getContext('2d');
+            var myChart = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(salesByQ),
+                    datasets: [{
+                        label: '# of Sales',
+                        data: Object.values(salesByQ),
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
                             'rgba(54, 162, 235, 0.2)',
@@ -158,6 +200,35 @@ function personalSalesPercentage(vendite) {
     }
 
     return relativeSalesByEmployee;
+}
+
+//Funzione per produrre un oggetto con il numero di contratti divisi per quadrimestre
+function numberSalesQ(vendite) {
+    //Creo un oggetto per il totale contratti per quadrimestre
+    var contractsByQ = {
+        Q1: 0,
+        Q2: 0,
+        Q3: 0,
+        Q4: 0
+    };
+
+    //Ciclo il database e aggiorno via via il conteggio dei contratti per quadrimestre
+    for (var i = 0; i < vendite.length; i++) {
+        var contract_date = moment(vendite[i].date, "DD/MM/YYYY");
+        var contract_month = contract_date.format("M");
+
+        if (contract_month < 3) {
+            contractsByQ.Q1++;
+        } else if (contract_month > 3 && contract_month < 7) {
+            contractsByQ.Q2++;
+        }  else if (contract_month > 6 && contract_month < 10) {
+            contractsByQ.Q3++;
+        }  else {
+            contractsByQ.Q4++;
+        }
+    }
+
+    return contractsByQ;
 }
 
 //Funzione per fare una chiamata POST e inviare i dati del nuovo contratto
