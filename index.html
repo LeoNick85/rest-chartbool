@@ -8,16 +8,52 @@
         <title>Esercitazione #34 - Sales chart layout</title>
     </head>
     <body>
-        <header>KPI</header>
+        <header>
+            <h1>Very Professional KPI</h1>
+        </header>
         <main>
             <div class="chart-wrapper">
+                <h2 class="chart-title">Vendite per mese</h2>
                 <canvas id="chart-one" width="400" height="400"></canvas>
             </div>
             <hr>
             <div class="chart-wrapper">
+                <h3 class="chart-title">Vendite in % per commerciale</h3>
                 <canvas id="chart-two" width="400" height="400"></canvas>
             </div>
+            <hr>
+            <div class="chart-wrapper">
+                <h4 class="chart-title">Numero contratti per quadrimestre</h4>
+                <canvas id="chart-three" width="400" height="400"></canvas>
+            </div>
         </main>
+        <aside>
+            <select id="salesman-selector" name="">
+                <option value="">--Seleziona venditore--</option>
+                <option value="Marco">Marco</option>
+                <option value="Giuseppe">Giuseppe</option>
+                <option value="Riccardo">Riccardo</option>
+                <option value="Roberto">Roberto</option>
+            </select>
+            <select id="month-selector" name="">
+                <option value="">--Seleziona mese--</option>
+                <option value="01">Gennaio</option>
+                <option value="02">Febbraio</option>
+                <option value="03">Marzo</option>
+                <option value="04">Aprile</option>
+                <option value="05">Maggio</option>
+                <option value="06">Giugno</option>
+                <option value="07">Luglio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Settembre</option>
+                <option value="10">Ottobre</option>
+                <option value="11">Novembre</option>
+                <option value="12">Dicembre</option>
+            </select>
+            <label for="amount-selector">Inserisci importo</label>
+            <input id="amount-selector" type="text">
+            <button id="add-sales">Aggiungi contratto</button>
+        </aside>
     </body>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js" charset="utf-8"></script>
     <script src="main.js" charset="utf-8"></script>

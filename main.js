@@ -1,34 +1,28 @@
 //Mia API http://157.230.17.132:4014/sales
 
 $(document).ready(function() {
+    //Preparo i grafici con i dati correnti con chiamata ajax
+    printCharts();
+
+    //Al click sul bottone "aggiungi contratto", faccio chiamata post per aggiornare i dati con il nuovo contratto e aggiorno i grafici con i nuovi dati
+    $("#add-sales").click(function(){
+        addNewContract();
+        //Richiamo la funzione dei grafici per rifarli aggiornati
+        printCharts();
+    })
+
+})
+
+//FUNZIONI
+
+//Funzione per disegnare i grafici dopo chiamata ajax
+function printCharts() {
     $.ajax({
         url : "http://157.230.17.132:4014/sales",
         method : "GET",
         success: function(array_vendite) {
-            //Elaboro il grafico con andamento totale delle vendite per mese, stile line
-            var salesByMonth = {
-                January: 0,
-                February: 0,
-                March: 0,
-                April: 0,
-                May: 0,
-                June: 0,
-                July: 0,
-                August: 0,
-                September: 0,
-                October: 0,
-                November: 0,
-                December: 0
-            };
-
-            //Uso un ciclo for per aggiungere via via le singole registrazioni di vendite al mese corrispondente
-            for (var i = 0; i < array_vendite.length; i++) {
-                var sale_date = moment(array_vendite[i].date, "DD/MM/YYYY");
-                var sale_date_month = sale_date.format("MMMM");
-
-                //In base al mese aggiorno la proprietà relativa nell'oggetto delle vendite totali per mese
-                salesByMonth[sale_date_month] += array_vendite[i].amount;
-            }
+            //Calcolo le vendite mese per mese
+            var salesByMonth = monthlySales(array_vendite);
 
             //Costruisco il grafico N-1, sulle vendite mese per mese
             var ctx1 = document.getElementById('chart-one').getContext('2d');
@@ -59,29 +53,8 @@ $(document).ready(function() {
                 }
             });
 
-            var totalSalesByEmployee = {};
-            var tot_amount = 0;
-
-            //Tramite ciclo for costruisco un oggetto con le vendite totali divise per venditore e il totale del fatturato
-            for (var i = 0; i < array_vendite.length; i++) {
-                //verifico se il venditore è già nella lista e aggiorno l'oggetto vendite per impiegato di conseguenza
-                if (totalSalesByEmployee.hasOwnProperty(array_vendite[i].salesman)) {
-                    totalSalesByEmployee[array_vendite[i].salesman] += array_vendite[i].amount;
-                } else {
-                    totalSalesByEmployee[array_vendite[i].salesman] = array_vendite[i].amount;
-                }
-                //Aggiorno il conteggio del totale
-                tot_amount += array_vendite[i].amount;
-            }
-
-            //Creo un oggetto con le percentuali di vendita (vendita dell'impiegato/totale vendite)
-            var relativeSalesByEmployee = {};
-
-            for (x in totalSalesByEmployee) {
-                var name = x;
-                var personal_sales = totalSalesByEmployee[x];
-                relativeSalesByEmployee[name] = (personal_sales / tot_amount);
-            }
+            //Calcolo le percentuali di vendita per singolo venditore
+            var relativeSalesByEmployee = personalSalesPercentage(array_vendite);
 
             //Genero il secondo grafico, a torta con la divisione percentuale delle vendite dei singoli impiegati
             var ctx2 = document.getElementById('chart-two').getContext('2d');
@@ -126,27 +99,92 @@ $(document).ready(function() {
             alert("Non funziona ajax");
         }
     })
+}
 
+//Funzione per produrre un oggetto con le vendite divise per mese
+function monthlySales(vendite) {
+    //Elaboro il grafico con andamento totale delle vendite per mese, stile line
+    var salesByMonth = {
+        January: 0,
+        February: 0,
+        March: 0,
+        April: 0,
+        May: 0,
+        June: 0,
+        July: 0,
+        August: 0,
+        September: 0,
+        October: 0,
+        November: 0,
+        December: 0
+    };
 
+    //Uso un ciclo for per aggiungere via via le singole registrazioni di vendite al mese corrispondente
+    for (var i = 0; i < vendite.length; i++) {
+        var sale_date = moment(vendite[i].date, "DD/MM/YYYY");
+        var sale_date_month = sale_date.format("MMMM");
 
+        //In base al mese aggiorno la proprietà relativa nell'oggetto delle vendite totali per mese
+        salesByMonth[sale_date_month] += parseInt(vendite[i].amount);
+    }
 
+    return salesByMonth;
+}
 
+//Funzione per produrre un oggetto con le percentuali di vendita divisa per venditore
+function personalSalesPercentage(vendite) {
+    var totalSalesByEmployee = {};
+    var tot_amount = 0;
 
+    //Tramite ciclo for costruisco un oggetto con le vendite totali divise per venditore e il totale del fatturato
+    for (var i = 0; i < vendite.length; i++) {
+        //verifico se il venditore è già nella lista e aggiorno l'oggetto vendite per impiegato di conseguenza
+        if (totalSalesByEmployee.hasOwnProperty(vendite[i].salesman)) {
+            totalSalesByEmployee[vendite[i].salesman] += parseInt(vendite[i].amount);
+        } else {
+            totalSalesByEmployee[vendite[i].salesman] = parseInt(vendite[i].amount);
+        }
+        //Aggiorno il conteggio del totale
+        tot_amount += parseInt(vendite[i].amount);
+    }
 
+    //Creo un oggetto con le percentuali di vendita (vendita dell'impiegato/totale vendite)
+    var relativeSalesByEmployee = {};
 
+    for (x in totalSalesByEmployee) {
+        var name = x;
+        var personal_sales = totalSalesByEmployee[x];
+        relativeSalesByEmployee[name] = (personal_sales / tot_amount * 100).toFixed(1);
+    }
 
+    return relativeSalesByEmployee;
+}
 
+//Funzione per fare una chiamata POST e inviare i dati del nuovo contratto
+function addNewContract() {
+    //Recupero i valori che mi interessano dal relativo form nella pagina e costruisco l'oggetto da inviare in post
+    var selected_salesman = $("#salesman-selector").val();
+    var selected_month = $("#month-selector").val();
+    var selected_amount = parseInt($("#amount-selector").val());
+    var contract_date = "01/" + selected_month + "/2017";
+    var new_contract = {
+        salesman: selected_salesman,
+        amount: selected_amount,
+        date: contract_date
+    }
 
+    console.log(new_contract);
 
-
-
-
-
-
-
-
-    //Primo grafico con andamento totale vendite, stile line
-
-    //Secondo grafico con contributi vendita per venditore nel 2017, in percentuale (fatturato venditore/fatturato totale)
-
-})
+    //Uso i valori salvati per fare la chiamata POST
+    $.ajax({
+            url : "http://157.230.17.132:4014/sales",
+            method : "POST",
+            data: new_contract,
+            success: function(data) {
+                console.log(data);
+                },
+            error : function() {
+                alert("Problema in POST");
+            }
+        })
+}

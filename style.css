@@ -2,15 +2,65 @@
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+header {
+    background-color: darkslategrey;
+    color: silver;
+    text-align: center;
+    padding: 30px;
+    border-bottom: 2px inset darkgrey;
+}
+
+body {
+    background-color: #f5e6d9;
 }
 
 .chart-wrapper {
     display: block;
     width: 500px;
     height: 600px;
-    margin: auto;
+    margin: 50px auto;
 }
 
-hr {
+main hr {
     margin: 60px;
+}
+
+.chart-title {
+    font-size: 24px;
+    text-decoration: underline;
+    margin-bottom: 20px;
+}
+
+aside {
+    text-align: center;
+    position: fixed;
+    padding: 10px;
+    top: 50%;
+    background-color: darkslategrey;
+    border: 2px solid silver;
+}
+
+button {
+    display: block;
+    font-size: 18px;
+    text-transform: uppercase;
+    text-decoration: underline;
+    color: #b6bfe4;
+    padding: 8px;
+    margin: 10px 0px;
+    border: 4px outset #b6bfe4;
+}
+
+select {
+    display: block;
+    margin: 10px auto;
+    background-color: #b6bfe4;
+}
+
+label {
+    display: block;
+    color: #b6bfe4;
 }
