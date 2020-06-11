@@ -136,6 +136,9 @@ function printCharts() {
                     }
                 }
             });
+
+            //Resetto il form ai valori di default
+            resetForm();
             },
         error : function() {
             alert("Non funziona ajax");
@@ -258,4 +261,11 @@ function addNewContract() {
                 alert("Problema in POST");
             }
         })
+}
+
+//Funzione per resettare i valori del form
+function resetForm() {
+    $("#salesman-selector").val("");
+    $("#month-selector").val("");
+    $("#amount-selector").val("");
 }
